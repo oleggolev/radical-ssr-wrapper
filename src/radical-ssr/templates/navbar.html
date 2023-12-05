@@ -1,0 +1,40 @@
+<style>
+    .navbar {
+        font-family: Roboto, sans-serif;
+        background-size: cover;
+        background-color: #000000;
+        padding: 15px 20px;
+    }
+
+    .nav-logo {
+        font-size: 24px;
+        color: #FFFFFF;
+        text-transform: uppercase;
+        font-weight: bolder;
+    }
+
+    .nav-custom-link {
+        font-weight: bold;
+        color: #FFFFFF !important;
+        text-transform: uppercase;
+    }
+</style>
+
+<nav id="navbar" class="black navbar navbar-expand-lg fixed-top">
+    <!-- Brand -->
+    <a id="nav-logo" class="navbar-brand nav-custom-link" href="/">RADICAL SSR</a>
+
+    <!-- Button collapsable -->
+    <button class="navbar-toggler" id="nav-btn" type="button" data-toggle="collapse"
+        data-target="#collapsibleNavbar">
+        <span class="navbar-btn"><i class="fa fa-bars" aria-hidden="true"></i></span>
+    </button>
+    <!-- Links -->
+    <div class="collapse navbar-collapse justify-content-end" id="collapsibleNavbar">
+        <ul id="nav-ul" class="navbar-nav">
+            <li class="nav-item navigation-list">
+                <a class="nav-link nav-custom-link" href="/about">About</a>
+            </li>
+        </ul>
+    </div>
+</nav>
