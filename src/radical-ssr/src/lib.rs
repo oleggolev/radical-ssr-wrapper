@@ -40,7 +40,8 @@ pub async fn get_about_template() -> String {
 /// Returns the read/write set of posts needed by `get_posts`.
 #[wasm_bindgen]
 pub async fn get_index_rw_set(page_num: u32, page_size: u32) -> JsValue {
-    let keys: Vec<String> = ((page_num * page_size)..((page_num + 1) * page_size))
+    // Does not do boundary checking.
+    let keys: Vec<String> = (((page_num - 1) * page_size)..((page_num) * page_size))
         .map(|post_id| post_id.to_string())
         .collect();
     serde_wasm_bindgen::to_value(&keys).unwrap()

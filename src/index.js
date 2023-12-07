@@ -57,14 +57,14 @@ async function updateCache(key, value) {
 	await cache.put(cacheKey, cacheValue)
 }
 
-async function handleConsistencyCheck(versions, remotefunc, args, remoteUrl) {
+async function handleConsistencyCheck(versions, args) {
 	let reqData = {
 		versions: versions,
-		function: remotefunc,
+		function: env.BACKUP,
 		args: args
 	}
-	logger("Sending consistency check for", versions, "to", remoteUrl, "with remote func", remotefunc);
-	return fetch(remoteUrl, {
+	logger("Sending consistency check for", versions, "to", env.REMOTE_URL, "with remote func", env.BACKUP);
+	return fetch(env.REMOTE_URL, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -75,40 +75,42 @@ async function handleConsistencyCheck(versions, remotefunc, args, remoteUrl) {
 	});
 }
 
-async function handleFunctionInvocation(url, args) {
-	logger("Invoking function that lives at", url);
-	return fetch(url, {
-		method: "POST",
-		body: JSON.stringify(args)
-	})
-}
-
-async function get_target_rw_set(args) {
-	let { page_num, page_size } = args;
-	let rw_set = await get_index_rw_set(page_num, page_size);
-	logger('rw_set', rw_set);
-	return rw_set;
-}
-
 async function orchestrate(request) {
 	const start = performance.now()
-	let data = await request.json();
+
+	// Extract search params or set defaults if absent.
+	const url = new URL(request.url);
+	let page_num = url.searchParams.get('page_num');
+	let page_size = url.searchParams.get('page_size');
+	if (page_num == undefined) {
+		page_num = 1;
+	}
+	if (page_size == undefined) {
+		page_size = 20;
+	}
+	const args = {
+		"page_num": page_num,
+		"page_size": page_size,
+	};
+
 	// Get the current versions of the keys in question
 	const versionStart = performance.now()
-	let extracted_rw_set = await get_target_rw_set(data.args);
-	let checkVersions = await checkCacheVersions(extracted_rw_set);
+	let rw_set = await get_index_rw_set(page_num, page_size);
+	let checkVersions = await checkCacheVersions(rw_set);
 	let versionEnd = performance.now()
 	logger("Result of version check:", checkVersions, "took", versionEnd - versionStart)
+
 	// Kick off the consistency check before running the function
 	let consistencyPromise = null
 	if (env.DO_CONSISTENCY_CHECK) {
-		consistencyPromise = handleConsistencyCheck(checkVersions, data.backup, data.args, data.remoteUrl);
+		consistencyPromise = handleConsistencyCheck(checkVersions, args);
 	} else {
-		logger("Skipping consistency check that would have used:", data.backup, data.remoteUrl, data.args)
+		logger("Skipping consistency check that would have used:", env.BACKUP, env.REMOTE_URL, args)
 	}
+
 	// Now run the function while we have the http request to the consistency check fired off
-	logger("Args to function", data.args)
-	let functionResult = await target_function(extracted_rw_set)
+	logger("Args to function", args)
+	let functionResult = await target_function(rw_set)
 	logger("Result of function invocation", functionResult)
 	const consistencyStart = performance.now()
 	let consistencyResult = consistencyPromise != null ? await consistencyPromise : { checkResult: true };

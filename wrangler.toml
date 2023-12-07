@@ -9,6 +9,9 @@ CAP_MISS_PROB = 0   # The probability that a hit should be treated as a miss bec
 DO_CONSISTENCY_CHECK = false
 DEBUGPRINT = true
 
+REMOTE_URL = "https://nuamf2bgzlrfj6vubqfzkjv52m0kpefu.lambda-url.us-east-2.on.aws/"
+BACKUP = "https://67f42q3sp4gqm7rfgvjngamyra0wrsew.lambda-url.us-east-2.on.aws/"
+
 [build]
 command = "wasm-pack build --target bundler ./src/radical-ssr/ && cp ./src/radical-ssr/wasm-patch.js ./src/radical-ssr/pkg/ssr_bench.js"
 watch_dir = ["src"]
