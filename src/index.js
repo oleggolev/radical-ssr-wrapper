@@ -138,7 +138,6 @@ async function orchestrate(request) {
 	}
 	// If we failed, we also need to update storage
 	let end = performance.now()
-	let a = 2;
 	logger("Returning to user", end - start)
 	return new Response(endResult.result, {
 		headers: {
