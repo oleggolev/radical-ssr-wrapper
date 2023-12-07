@@ -138,10 +138,11 @@ async function orchestrate(request) {
 	}
 	// If we failed, we also need to update storage
 	let end = performance.now()
+	let a = 2;
 	logger("Returning to user", end - start)
-	return new Response(JSON.stringify(endResult.result), {
+	return new Response(endResult.result, {
 		headers: {
-			"content-type": "application/json;charset=UTF-8",
+			"content-type": "text/html;charset=UTF-8",
 		},
 	});
 }
@@ -159,11 +160,11 @@ async function target_function(rw_set) {
 				return await cacheValue.json();
 			}
 		})
-	).catch(_err => { return false; });;
+	).catch(_err => { return false; });
 
 	// At this point, we got all cache hits, so generate the page and return result.
 	let funcStart = performance.now();
-	let template = get_index_template(posts);
+	let template = await get_index_template(posts);
 	let funcEnd = performance.now();
 	logger('get_index_template runtime', funcEnd - funcStart);
 	return template;

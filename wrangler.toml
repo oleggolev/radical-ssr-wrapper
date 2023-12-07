@@ -14,4 +14,4 @@ BACKUP = "https://67f42q3sp4gqm7rfgvjngamyra0wrsew.lambda-url.us-east-2.on.aws/"
 
 [build]
 command = "wasm-pack build --target bundler ./src/radical-ssr/ && cp ./src/radical-ssr/wasm-patch.js ./src/radical-ssr/pkg/ssr_bench.js"
-watch_dir = ["src"]
+watch_dir = ["src/radical-ssr/src", "src/index.js"]
